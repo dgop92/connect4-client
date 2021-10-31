@@ -5,7 +5,9 @@ import java.net.URI;
 import org.json.JSONObject;
 
 import core.dataclasses.LobbyStatus;
+import core.dataclasses.TurnData;
 import core.listeners.ConnectionListener;
+import core.listeners.GameListener;
 import core.listeners.LobbyListener;
 import io.socket.client.IO;
 import io.socket.client.Socket;
@@ -17,8 +19,13 @@ public class SocketManager {
     public static final String serverUrl = "ws://localhost:8080";
     private ConnectionListener connectionListener;
     private LobbyListener lobbyListener;
+    private GameListener gameListener;
     private LobbyStatus currentLobbyStatus;
+    // private TurnData currentTurnData;
 
+    private SocketManager() {
+
+    }
 
     public static SocketManager getSocketManager() {
         if (socketManager == null) {
@@ -37,36 +44,54 @@ public class SocketManager {
             socket.connect();
             initConnectionListeners();
             initLobbyListeners();
+            initGameListeners();
         }
     }
 
     private void initConnectionListeners() {
         socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
-            if(connectionListener != null) this.connectionListener.onConnection();
+            if (connectionListener != null)
+                this.connectionListener.onConnection();
         });
         socket.on(Socket.EVENT_DISCONNECT, (Object... args) -> {
-            if(connectionListener != null) this.connectionListener.onDisconnection();
+            if (connectionListener != null)
+                this.connectionListener.onDisconnection();
         });
         socket.on(Socket.EVENT_CONNECT_ERROR, (Object... args) -> {
-            if(connectionListener != null) this.connectionListener.onConnectionError();
+            if (connectionListener != null)
+                this.connectionListener.onConnectionError();
         });
     }
 
     private void initLobbyListeners() {
         socket.on(C4Events.JOIN_LOBBY, (Object... args) -> {
-            if(lobbyListener != null) {
-                currentLobbyStatus = new LobbyStatus((JSONObject)args[0]);
+            if (lobbyListener != null) {
+                currentLobbyStatus = new LobbyStatus((JSONObject) args[0]);
                 lobbyListener.onNewPlayer(currentLobbyStatus);
             }
         });
         socket.on(C4Events.LEAVE_LOBBY, (Object... args) -> {
-            if(lobbyListener != null) {
-                currentLobbyStatus = new LobbyStatus((JSONObject)args[0]);
+            if (lobbyListener != null) {
+                currentLobbyStatus = new LobbyStatus((JSONObject) args[0]);
                 lobbyListener.onPlayerLeave(currentLobbyStatus);
             }
         });
         socket.on(C4Events.GAME_STARTED, (Object... args) -> {
-            if(lobbyListener != null) lobbyListener.onGameStarted();
+            if (lobbyListener != null)
+                lobbyListener.onGameStarted();
+        });
+    }
+
+    private void initGameListeners() {
+        socket.on(C4Events.PLAYER_TURN, (Object... args) -> {
+            if (gameListener != null) {
+                gameListener.onPlayerTurn();
+            }
+        });
+        socket.on(C4Events.TURN_LOST, (Object... args) -> {
+            if (gameListener != null) {
+                gameListener.onTurnLost(new TurnData((JSONObject) args[0]));
+            }
         });
     }
 
@@ -76,6 +101,14 @@ public class SocketManager {
 
     public void setLobbyListener(LobbyListener lobbyListener) {
         this.lobbyListener = lobbyListener;
+        // if java is slower than the websocket
+        if (currentLobbyStatus != null && lobbyListener != null){
+            lobbyListener.onNewPlayer(currentLobbyStatus);
+        }
+    }
+
+    public void setGameListener(GameListener gameListener) {
+        this.gameListener = gameListener;
     }
 
     public Socket getSocket() {
@@ -85,5 +118,5 @@ public class SocketManager {
     public LobbyStatus getCurrentLobbyStatus() {
         return currentLobbyStatus;
     }
-    
+
 }

@@ -10,7 +10,7 @@ public class MainMenu extends javax.swing.JFrame implements ConnectionListener{
     
     public MainMenu() {
         initComponents();
-
+        
         socketManager = SocketManager.getSocketManager();
         socketManager.setConnectionListener(this);
 
@@ -19,8 +19,10 @@ public class MainMenu extends javax.swing.JFrame implements ConnectionListener{
     @Override
     public void onConnection() {
         System.out.println("connected");
+        socketManager.setConnectionListener(null);
         Lobby lobby = new Lobby();
         lobby.setVisible(true);
+        this.dispose();
     }
 
     @Override

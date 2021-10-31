@@ -3,6 +3,7 @@ package interfaces;
 import core.SocketManager;
 import core.dataclasses.LobbyStatus;
 import core.listeners.LobbyListener;
+import game.GameSketch;
 
 
 public class Lobby extends javax.swing.JFrame implements LobbyListener{
@@ -30,6 +31,10 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener{
     @Override
     public void onGameStarted() {
         System.out.println("start");
+        socketManager.setLobbyListener(null);
+        GameSketch gameSketch = new GameSketch();
+        gameSketch.run();
+        this.dispose();
     }
 
     @SuppressWarnings("unchecked")
