@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import core.C4Events;
 import core.SocketManager;
+import core.dataclasses.GameState;
+import core.dataclasses.InvalidData;
 import core.dataclasses.TurnData;
 import core.listeners.GameListener;
 import io.socket.client.Ack;
@@ -69,5 +71,21 @@ public class GameSketch extends PApplet implements GameListener {
     @Override
     public void onTurnLost(TurnData turnData) {
         System.out.println("Perdi mi turno");
+    }
+
+    @Override
+    public void onUpdateState(GameState gameState) {
+        System.out.println("m: ");
+        System.out.println(gameState.getM());
+    }
+
+    @Override
+    public void onPlayerWon(GameState gameState) {
+        
+    }
+
+    @Override
+    public void onInvalidPlay(InvalidData invalidData) {
+        System.out.println(invalidData.getErrorMessage());
     }
 }

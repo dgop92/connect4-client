@@ -4,6 +4,8 @@ import java.net.URI;
 
 import org.json.JSONObject;
 
+import core.dataclasses.GameState;
+import core.dataclasses.InvalidData;
 import core.dataclasses.LobbyStatus;
 import core.dataclasses.TurnData;
 import core.listeners.ConnectionListener;
@@ -21,7 +23,7 @@ public class SocketManager {
     private LobbyListener lobbyListener;
     private GameListener gameListener;
     private LobbyStatus currentLobbyStatus;
-    // private TurnData currentTurnData;
+    private GameState currentGameState;
 
     private SocketManager() {
 
@@ -93,6 +95,23 @@ public class SocketManager {
                 gameListener.onTurnLost(new TurnData((JSONObject) args[0]));
             }
         });
+        socket.on(C4Events.UPDATE_GAME, (Object... args) -> {
+            if (gameListener != null) {
+                currentGameState = new GameState((JSONObject) args[0]);
+                gameListener.onUpdateState(currentGameState);
+            }
+        });
+        socket.on(C4Events.PLAYER_WON, (Object... args) -> {
+            if (gameListener != null) {
+                currentGameState = new GameState((JSONObject) args[0]);
+                gameListener.onPlayerWon(currentGameState);
+            }
+        });
+        socket.on(C4Events.INVALID_PLAY, (Object... args) -> {
+            if (gameListener != null) {
+                gameListener.onInvalidPlay(new InvalidData((JSONObject) args[0]));
+            }
+        });
     }
 
     public void setConnectionListener(ConnectionListener connectionListener) {
@@ -102,13 +121,16 @@ public class SocketManager {
     public void setLobbyListener(LobbyListener lobbyListener) {
         this.lobbyListener = lobbyListener;
         // if java is slower than the websocket
-        if (currentLobbyStatus != null && lobbyListener != null){
+        if (currentLobbyStatus != null && lobbyListener != null) {
             lobbyListener.onNewPlayer(currentLobbyStatus);
         }
     }
 
     public void setGameListener(GameListener gameListener) {
         this.gameListener = gameListener;
+        if (currentGameState != null && gameListener != null) {
+            gameListener.onUpdateState(currentGameState);
+        }
     }
 
     public Socket getSocket() {

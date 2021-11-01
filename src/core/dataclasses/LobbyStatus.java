@@ -15,8 +15,7 @@ public class LobbyStatus {
         players = new ArrayList<>();
         try {
             this.numberOfClients = jsonObject.getInt("nClients");
-            JSONArray jsonArray;
-            jsonArray = jsonObject.getJSONArray("players");
+            JSONArray jsonArray = jsonObject.getJSONArray("players");
             for (int i = 0; i < numberOfClients; i++) {
                 players.add(jsonArray.optString(i));
             }
