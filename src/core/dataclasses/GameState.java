@@ -23,6 +23,7 @@ public class GameState {
                     JSONObject rawObject = row.optJSONObject(j);
                     if (rawObject != null) {
                         CellData cellData = new CellData(rawObject.getString("color"));
+                        
                         this.connect4Table[i][j] = cellData;
                     }
                 }

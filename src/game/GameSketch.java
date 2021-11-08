@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import core.C4Events;
 import core.SocketManager;
+import core.dataclasses.CellData;
 import core.dataclasses.GameState;
 import core.dataclasses.InvalidData;
 import core.dataclasses.TurnData;
@@ -20,11 +21,12 @@ public class GameSketch extends PApplet implements GameListener {
 //    int [] colorP1 = new int[3];
 //    int [] colorP2 = new int[3];
 
-     int[] colorP1 = {250, 0, 0};
-     int[] colorP2 = {0, 0, 250};
+    int[] colorP1 = {250, 0, 0};
+    int[] colorP2 = {0, 0, 250};
     String[] names = new String[2];
     int filas, columnas;
-    boolean[][] putTheToken;
+    public CellData[][] table;
+   
 
     public GameSketch() {
         super();
@@ -32,18 +34,9 @@ public class GameSketch extends PApplet implements GameListener {
         socketManager = SocketManager.getSocketManager();
         socketManager.setGameListener(this);
 
-//        this.colorP1 = getColorByString(color1);
-//        this.colorP2 = getColorByString(color2); 
-
-        //for test
-      
-
     }
 
-    
-
-    //int colorP1[] = new int[3];
-    //int colorP2[] = new int[3];
+   
     PImage board;
 
     @Override
@@ -55,14 +48,7 @@ public class GameSketch extends PApplet implements GameListener {
         names[1] = "Player two";
 
         board = this.loadImage("interfaces/images/textura-tipo-madera-roble.jpg");
-        
-//        putTheToken = new boolean[filas][columnas];
-//
-//        for (int i = 0; i < filas; i++) {
-//            for (int j = 0; j < columnas; j++) {
-//                putTheToken[i][j] = false;
-//            }
-//        }
+
 
     }
 
@@ -73,11 +59,13 @@ public class GameSketch extends PApplet implements GameListener {
         // upper section 
         setHeader();
 
-        // board 
-        setBoard(10, 10, 1);
-       
-        setFooter();
+       // delay(5000);
         
+        // board 
+        setBoard();
+
+        setFooter();
+
     }
 
     @Override
@@ -85,23 +73,11 @@ public class GameSketch extends PApplet implements GameListener {
 
     }
 
-    int tokenSelectedX = 0, tokenSelectedY = 0;
+    int tokenSelectedX = 0;
 
     @Override
     public void keyPressed() {
-        if (keyCode == UP) {
 
-            if (tokenSelectedY != 0) {
-                tokenSelectedY--;
-            }
-
-        }
-
-        if (keyCode == DOWN) {
-            if (tokenSelectedY != filas - 1) {
-                tokenSelectedY++;
-            }
-        }
 
         if (keyCode == LEFT) {
             if (tokenSelectedX != 0) {
@@ -119,19 +95,18 @@ public class GameSketch extends PApplet implements GameListener {
         if (keyCode == ENTER) {
 
             //putTheToken[tokenSelectedY][tokenSelectedX] = true;
-            
             try {
                 JSONObject data = new JSONObject();
-                data.put("columnIndex", 1);
+                data.put("columnIndex", tokenSelectedX);
                 socketManager.getSocket().emit(
-                    C4Events.PLAYER_MOVEMENT, 
-                    data, 
-                    new Ack() {
-                        @Override
-                        public void call(Object... args) {
-                            TurnData turnData = new TurnData((JSONObject) args[0]);
-                            System.out.println(turnData.getTimeConsumed());
-                        }
+                        C4Events.PLAYER_MOVEMENT,
+                        data,
+                        new Ack() {
+                    @Override
+                    public void call(Object... args) {
+                        TurnData turnData = new TurnData((JSONObject) args[0]);
+                        System.out.println(turnData.getTimeConsumed());
+                    }
                 });
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -158,13 +133,26 @@ public class GameSketch extends PApplet implements GameListener {
 
     @Override
     public void onUpdateState(GameState gameState) {
+        filas = gameState.getN();
+        columnas = gameState.getM();
+        table = gameState.getConnect4Table();
+//        for (int i = 0; i < filas; i++) {
+//            for (int j = 0; j < columnas; j++) {
+//                
+//                System.out.print("["+ table[i][j]+"]");
+//                
+//            }
+//            
+//            System.out.println("");
+//        }
+        
         System.out.println("m: ");
         System.out.println(gameState.getM());
     }
 
     @Override
     public void onPlayerWon(GameState gameState) {
-        
+
     }
 
     @Override
@@ -198,13 +186,11 @@ public class GameSketch extends PApplet implements GameListener {
 
     int tokenRadius;
 
-    public void setBoard(int n, int m, int playerNumber) {
-        filas = n;
-        columnas = m;
+    public void setBoard() {
         PlayBoard playBoard = new PlayBoard();
-        playBoard.calculateTokenSeparation(n, m);
+        playBoard.calculateTokenSeparation(filas, columnas);
 
-        System.out.println(playBoard.tokenSeparationX + " " + playBoard.tokenSeparationY);
+  
 
         fill(0);
 
@@ -215,38 +201,36 @@ public class GameSketch extends PApplet implements GameListener {
         float acumX = 0, acumY = 0;
 //    float separationX =  ; 
 
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < filas; i++) {
 
-            for (int j = 0; j < m; j++) {
+            for (int j = 0; j < columnas; j++) {
 
                 //marking the selected token
-                if (tokenSelectedX == j && tokenSelectedY == i) {
-                    System.out.println(i + " " + j);
+                if (tokenSelectedX == j ) {
+                 
                     stroke(250);
 
                 } else {
                     noStroke();
                 }
+             
+              
+                if (table[i][j] != null) {
 
-                //paint the token
-//                if(putTheToken[i][j]) {
-//                    
-//                        switch(playerNumber){
-//                            case 1:
-//                                fill(colorP1[0], colorP1[1], colorP1[2]);
-//                                break;
-//                            case 2:
-//                                 fill(colorP2[0], colorP2[1], colorP2[2]);
-//                                break;
-//                        }
-//                    
-//                    }
+                    colorP1 = getColorByString(table[i][j].getColorAsString());
+
+                    fill(colorP1[0], colorP1[1], colorP1[2]);
+
+                } else {
+                  fill(0);
+                }
+                
+               
                 //draw the token
                 if (j == 0) {
                     circle(110 + tokenRadius / 2 + acumX, 110 + tokenRadius / 2 + acumY, tokenRadius);
                 } else {
                     circle(110 + tokenRadius / 2 + acumX, 110 + tokenRadius / 2 + acumY, tokenRadius);
-
                 }
 
                 acumX += (tokenRadius + playBoard.tokenSeparationX);
@@ -258,22 +242,20 @@ public class GameSketch extends PApplet implements GameListener {
 
         }
         noStroke();
-//        fill(250, 0, 0);
-//        circle(width / 2, 500, tokenRadius);
+
 
     }
-    
+
     // value to tests
     String time = "1:00";
-    
-    public void setFooter(){
+
+    public void setFooter() {
         fill(250);
-        rect(width/2 - 50, 600 - 30, 100, 30);
+        rect(width / 2 - 50, 600 - 30, 100, 30);
         fill(0);
         textSize(20);
-        text(time, width/2 - textWidth(time)/2, 600-10);
+        text(time, width / 2 - textWidth(time) / 2, 600 - 10);
     }
-    
 
     public int[] getColorByString(String color) {
 
@@ -284,7 +266,6 @@ public class GameSketch extends PApplet implements GameListener {
             int[] colorV = {250, 0, 0};
             colorF = colorV;
         } else if (color.equalsIgnoreCase("Green")) {
-
             int[] colorV = {0, 250, 0};
             colorF = colorV;
         } else if (color.equalsIgnoreCase("Blue")) {

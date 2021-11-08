@@ -25,6 +25,10 @@ public class SocketManager {
     private LobbyStatus currentLobbyStatus;
     private GameState currentGameState;
 
+    public GameState getCurrentGameState() {
+        return currentGameState;
+    }
+
     private SocketManager() {
 
     }
