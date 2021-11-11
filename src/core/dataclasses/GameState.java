@@ -1,5 +1,7 @@
 package core.dataclasses;
 
+import java.util.ArrayList;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,15 +10,25 @@ public class GameState {
     
     private int m;
     private int n;
+    private ArrayList<Player> players; 
     private CellData[][] connect4Table;
 
     public GameState(JSONObject parentJsonObject) {
         try {
-            JSONObject jsonObject = parentJsonObject.getJSONObject("state");
-            this.m = jsonObject.getInt("m");
-            this.n = jsonObject.getInt("n");
+            players = new ArrayList<>();
+
+            JSONObject state = parentJsonObject.getJSONObject("state");
+            JSONArray playersObj = parentJsonObject.getJSONArray("players");
+            
+            for (int i = 0; i < playersObj.length(); i++) {
+                JSONObject playerObj = playersObj.optJSONObject(i);
+                players.add(new InGamePlayer(playerObj));
+            }
+
+            this.m = state.getInt("m");
+            this.n = state.getInt("n");
             this.connect4Table = new CellData[n][m];
-            JSONArray table = jsonObject.getJSONArray("table");
+            JSONArray table = state.getJSONArray("table");
             for (int i = 0; i < n; i++) {
                 JSONArray row = table.optJSONArray(i);
                 for (int j = 0; j < m; j++) {

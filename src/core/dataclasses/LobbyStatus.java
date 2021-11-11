@@ -7,9 +7,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LobbyStatus {
-    
+
     private int numberOfClients;
-    private ArrayList<String> players;
+    private ArrayList<LobbyPlayer> players;
 
     public LobbyStatus(JSONObject jsonObject) {
         players = new ArrayList<>();
@@ -17,7 +17,7 @@ public class LobbyStatus {
             this.numberOfClients = jsonObject.getInt("nClients");
             JSONArray jsonArray = jsonObject.getJSONArray("players");
             for (int i = 0; i < numberOfClients; i++) {
-                players.add(jsonArray.optString(i));
+                players.add(new LobbyPlayer(jsonArray.optJSONObject(i)));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -28,8 +28,8 @@ public class LobbyStatus {
         return numberOfClients;
     }
 
-    public ArrayList<String> getPlayers() {
+    public ArrayList<LobbyPlayer> getPlayers() {
         return players;
     }
-    
+
 }
