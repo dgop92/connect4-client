@@ -2,8 +2,10 @@ package interfaces;
 
 import core.SocketManager;
 import core.listeners.ConnectionListener;
+import core.listeners.MainMenuListener;
 
-public class MainMenu extends javax.swing.JFrame implements ConnectionListener{
+public class MainMenu extends javax.swing.JFrame 
+    implements ConnectionListener, MainMenuListener{
 
 
     SocketManager socketManager;
@@ -13,16 +15,21 @@ public class MainMenu extends javax.swing.JFrame implements ConnectionListener{
         
         socketManager = SocketManager.getSocketManager();
         socketManager.setConnectionListener(this);
+        socketManager.setMainMenuListener(this);
 
+    }
+
+    @Override
+    public void moveToLobby() {
+        socketManager.setConnectionListener(null);
+        Lobby lobby = new Lobby();
+        lobby.setVisible(true);
+        this.dispose();
     }
 
     @Override
     public void onConnection() {
         System.out.println("connected");
-        socketManager.setConnectionListener(null);
-        Lobby lobby = new Lobby();
-        lobby.setVisible(true);
-        this.dispose();
     }
 
     @Override
@@ -243,7 +250,12 @@ public class MainMenu extends javax.swing.JFrame implements ConnectionListener{
     }//GEN-LAST:event_roomname_textfieldActionPerformed
 
     private void getInMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getInMouseClicked
-    socketManager.initSocket(username_texfield.getText(), roomname_textfield.getText());
+        socketManager.initSocket(
+            username_texfield.getText(), 
+            roomname_textfield.getText(), 
+            6, 
+            7
+        );
 
     }//GEN-LAST:event_getInMouseClicked
 

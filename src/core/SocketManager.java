@@ -7,10 +7,12 @@ import org.json.JSONObject;
 import core.dataclasses.GameState;
 import core.dataclasses.InvalidData;
 import core.dataclasses.LobbyStatus;
+import core.dataclasses.TickData;
 import core.dataclasses.TurnData;
 import core.listeners.ConnectionListener;
 import core.listeners.GameListener;
 import core.listeners.LobbyListener;
+import core.listeners.MainMenuListener;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 
@@ -21,6 +23,7 @@ public class SocketManager {
     public static final String serverUrl = "ws://localhost:8080";
     private ConnectionListener connectionListener;
     private LobbyListener lobbyListener;
+    private MainMenuListener mainMenuListener;
     private GameListener gameListener;
     private LobbyStatus currentLobbyStatus;
     private GameState currentGameState;
@@ -40,15 +43,22 @@ public class SocketManager {
         return socketManager;
     }
 
-    public void initSocket(String username, String roomName) {
+    public void initSocket(String username, String roomName, int n, int m) {
         if (socket == null) {
-            String query = String.format("username=%s&roomName=%s", username, roomName);
+            String query = String.format(
+                "username=%s&roomName=%s&n=%d&m=%d", 
+                username, 
+                roomName,
+                n,
+                m
+            );
 
             URI uri = URI.create(serverUrl);
             IO.Options options = IO.Options.builder().setQuery(query).build();
             socket = IO.socket(uri, options);
             socket.connect();
             initConnectionListeners();
+            initMainMenuListeners();
             initLobbyListeners();
             initGameListeners();
         }
@@ -66,6 +76,13 @@ public class SocketManager {
         socket.on(Socket.EVENT_CONNECT_ERROR, (Object... args) -> {
             if (connectionListener != null)
                 this.connectionListener.onConnectionError();
+        });
+    }
+
+    private void initMainMenuListeners() {
+        socket.on(C4Events.MOVE_TO_LOBBY, (Object... args) -> {
+            if (mainMenuListener != null)
+                mainMenuListener.moveToLobby();
         });
     }
 
@@ -116,6 +133,15 @@ public class SocketManager {
                 gameListener.onInvalidPlay(new InvalidData((JSONObject) args[0]));
             }
         });
+        socket.on(C4Events.TURN_TICK, (Object... args) -> {
+            if (gameListener != null) {
+                gameListener.onTurnTick(new TickData((JSONObject) args[0]));
+            }
+        });
+    }
+
+    public void setMainMenuListener(MainMenuListener mainMenuListener) {
+        this.mainMenuListener = mainMenuListener;
     }
 
     public void setConnectionListener(ConnectionListener connectionListener) {

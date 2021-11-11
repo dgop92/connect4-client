@@ -1,11 +1,10 @@
 package interfaces;
 
+import core.C4Events;
 import core.SocketManager;
 import core.dataclasses.LobbyStatus;
 import core.listeners.LobbyListener;
 import game.GameSketch;
-import java.awt.Component;
-import java.util.ArrayList;
 
 public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
@@ -25,22 +24,21 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
     @Override
     public void onNewPlayer(LobbyStatus lobbyStatus) {
-
         if (lobbyStatus.getNumberOfClients() == 1) {
 
             player1_panel.setVisible(true);
-            player1_name.setText(lobbyStatus.getPlayers().get(0));
+            player1_name.setText(lobbyStatus.getPlayers().get(0).toString());
+            System.out.println(lobbyStatus.getPlayers().get(0).toString());
 
         }
 
-//        System.out.println(lobbyStatus.getNumberOfClients());
         if (lobbyStatus.getNumberOfClients() == 2) {
             
             player1_panel.setVisible(true);
-            player1_name.setText(lobbyStatus.getPlayers().get(0));
+            player1_name.setText(lobbyStatus.getPlayers().get(0).toString());
 
             player2_panel.setVisible(true);
-            player2_name.setText(lobbyStatus.getPlayers().get(1));
+            player2_name.setText(lobbyStatus.getPlayers().get(1).toString());
 
         }
 
@@ -54,7 +52,6 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
     @Override
     public void onGameStarted() {
 
-        System.out.println("start");
         socketManager.setLobbyListener(null);
         GameSketch gameSketch = new GameSketch();
         gameSketch.run();
@@ -162,7 +159,7 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
     private void start_buttonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_start_buttonActionPerformed
 
-        onGameStarted();
+        socketManager.getSocket().emit(C4Events.REQUEST_START_GAME);
 
 
     }//GEN-LAST:event_start_buttonActionPerformed

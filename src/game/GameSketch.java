@@ -8,6 +8,7 @@ import core.SocketManager;
 import core.dataclasses.CellData;
 import core.dataclasses.GameState;
 import core.dataclasses.InvalidData;
+import core.dataclasses.TickData;
 import core.dataclasses.TurnData;
 import core.listeners.GameListener;
 import core.models.PlayBoard;
@@ -105,7 +106,6 @@ public class GameSketch extends PApplet implements GameListener {
                     @Override
                     public void call(Object... args) {
                         TurnData turnData = new TurnData((JSONObject) args[0]);
-                        System.out.println(turnData.getTimeConsumed());
                     }
                 });
             } catch (JSONException e) {
@@ -146,8 +146,11 @@ public class GameSketch extends PApplet implements GameListener {
 //            System.out.println("");
 //        }
         
-        System.out.println("m: ");
-        System.out.println(gameState.getM());
+    }
+
+    @Override
+    public void onTurnTick(TickData tickData) {
+        System.out.println(tickData.getTime());
     }
 
     @Override
