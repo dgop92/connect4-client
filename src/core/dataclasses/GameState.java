@@ -10,7 +10,7 @@ public class GameState {
     
     private int m;
     private int n;
-    private ArrayList<Player> players; 
+    private ArrayList<InGamePlayer> players; 
     private CellData[][] connect4Table;
 
     public GameState(JSONObject parentJsonObject) {
@@ -35,11 +35,11 @@ public class GameState {
                     JSONObject rawObject = row.optJSONObject(j);
                     if (rawObject != null) {
                         CellData cellData = new CellData(rawObject.getString("color"));
-                        
                         this.connect4Table[i][j] = cellData;
                     }
                 }
             }
+
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -55,5 +55,9 @@ public class GameState {
 
     public int getN() {
         return n;
+    }
+
+    public ArrayList<InGamePlayer> getPlayers() {
+        return players;
     }
 }

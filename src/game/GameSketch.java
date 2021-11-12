@@ -7,6 +7,7 @@ import core.C4Events;
 import core.SocketManager;
 import core.dataclasses.CellData;
 import core.dataclasses.GameState;
+import core.dataclasses.InGamePlayer;
 import core.dataclasses.InvalidData;
 import core.dataclasses.TickData;
 import core.dataclasses.TurnData;
@@ -122,13 +123,23 @@ public class GameSketch extends PApplet implements GameListener {
     }
 
     @Override
-    public void onPlayerTurn() {
-        System.out.println("MI turno");
+    public void onPlayerTurn(InGamePlayer player) {
+        System.out.println(
+            String.format(
+                "turno de %s", 
+                player.getUsername()
+            )
+        );
     }
 
     @Override
-    public void onTurnLost(TurnData turnData) {
-        System.out.println("Perdi mi turno");
+    public void onTurnLost(InGamePlayer player) {
+        System.out.println(
+            String.format(
+                "el turno de %s se perdio", 
+                player.getUsername()
+            )
+        );
     }
 
     @Override

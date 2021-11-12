@@ -2,13 +2,13 @@ package core;
 
 import java.net.URI;
 
+import org.json.JSONException;
 import org.json.JSONObject;
-
 import core.dataclasses.GameState;
+import core.dataclasses.InGamePlayer;
 import core.dataclasses.InvalidData;
 import core.dataclasses.LobbyStatus;
 import core.dataclasses.TickData;
-import core.dataclasses.TurnData;
 import core.listeners.ConnectionListener;
 import core.listeners.GameListener;
 import core.listeners.LobbyListener;
@@ -108,12 +108,20 @@ public class SocketManager {
     private void initGameListeners() {
         socket.on(C4Events.PLAYER_TURN, (Object... args) -> {
             if (gameListener != null) {
-                gameListener.onPlayerTurn();
+                try {
+                    gameListener.onPlayerTurn(new InGamePlayer((JSONObject) args[0]));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         socket.on(C4Events.TURN_LOST, (Object... args) -> {
             if (gameListener != null) {
-                gameListener.onTurnLost(new TurnData((JSONObject) args[0]));
+                try {
+                    gameListener.onTurnLost(new InGamePlayer((JSONObject) args[0]));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
         socket.on(C4Events.UPDATE_GAME, (Object... args) -> {
