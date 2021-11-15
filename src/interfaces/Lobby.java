@@ -36,8 +36,6 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
             if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("BLue"))  player1_panel.setBackground(Color.blue.darker());
             if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Orange"))  player1_panel.setBackground(Color.orange.darker());
             
-            System.out.println(lobbyStatus.getPlayers().get(0).toString());
-
         }
 
         if (lobbyStatus.getNumberOfClients() == 2) {
@@ -67,18 +65,12 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
     @Override
     public void onPlayerLeave(LobbyStatus lobbyStatus) {
-        System.out.println(lobbyStatus.getNumberOfClients());
-        
         if(lobbyStatus.getPlayers().get(0) == null) player1_panel.setVisible(false); 
         if(lobbyStatus.getPlayers().get(1) == null) player2_panel.setVisible(false);
-        
-        
-        
     }
 
     @Override
     public void onGameStarted() {
-
         socketManager.setLobbyListener(null);
         GameSketch gameSketch = new GameSketch();
         gameSketch.run();

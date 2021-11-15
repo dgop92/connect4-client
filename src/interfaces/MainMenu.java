@@ -17,6 +17,9 @@ public class MainMenu extends javax.swing.JFrame
         socketManager.setConnectionListener(this);
         socketManager.setMainMenuListener(this);
 
+        n.setValue(6);
+        m.setValue(7);
+
     }
 
     @Override
@@ -29,20 +32,18 @@ public class MainMenu extends javax.swing.JFrame
 
     @Override
     public void onConnection() {
-        System.out.println("connected");
+        
     }
 
     @Override
     public void onDisconnection() {
-        System.out.println("disc");
+        
     }
     
     boolean err = true;
 
     @Override
     public void onConnectionError() {
-        System.out.println("errr");
-           
         if(err){
           InfoDialog infoDialog = new InfoDialog(
                 this, 

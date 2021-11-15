@@ -1,0 +1,30 @@
+{
+  "state": {
+    "table": [
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null],
+      [null, null, null, null, null, null, null, null]
+    ],
+    "m": 8,
+    "n": 8
+  },
+  "players": [
+    {
+      "color": "orange",
+      "connected": true,
+      "cumulativeTime": 0,
+      "username": "casa"
+    },
+    {
+      "color": "blue",
+      "connected": true,
+      "cumulativeTime": 0,
+      "username": "suci"
+    }
+  ]
+}
