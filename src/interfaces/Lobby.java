@@ -5,6 +5,7 @@ import core.SocketManager;
 import core.dataclasses.LobbyStatus;
 import core.listeners.LobbyListener;
 import game.GameSketch;
+import java.awt.Color;
 
 public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
@@ -28,6 +29,13 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
 
             player1_panel.setVisible(true);
             player1_name.setText(lobbyStatus.getPlayers().get(0).toString());
+            
+            
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Red"))  player1_panel.setBackground(Color.red.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Green"))  player1_panel.setBackground(Color.green.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("BLue"))  player1_panel.setBackground(Color.blue.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Orange"))  player1_panel.setBackground(Color.orange.darker());
+            
             System.out.println(lobbyStatus.getPlayers().get(0).toString());
 
         }
@@ -36,6 +44,16 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
             
             player1_panel.setVisible(true);
             player1_name.setText(lobbyStatus.getPlayers().get(0).toString());
+            
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Red"))  player1_panel.setBackground(Color.red.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Green"))  player1_panel.setBackground(Color.green.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("BLue"))  player1_panel.setBackground(Color.blue.darker());
+            if(lobbyStatus.getPlayers().get(0).getColorAsString().equalsIgnoreCase("Orange"))  player1_panel.setBackground(Color.orange.darker());
+            
+            if(lobbyStatus.getPlayers().get(1).getColorAsString().equalsIgnoreCase("Red"))  player2_panel.setBackground(Color.red.darker());
+            if(lobbyStatus.getPlayers().get(1).getColorAsString().equalsIgnoreCase("Green"))  player2_panel.setBackground(Color.green.darker());
+            if(lobbyStatus.getPlayers().get(1).getColorAsString().equalsIgnoreCase("BLue"))  player2_panel.setBackground(Color.blue.darker());
+            if(lobbyStatus.getPlayers().get(1).getColorAsString().equalsIgnoreCase("Orange"))  player2_panel.setBackground(Color.orange.darker());
 
             player2_panel.setVisible(true);
             player2_name.setText(lobbyStatus.getPlayers().get(1).toString());
@@ -43,10 +61,19 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
         }
 
     }
+    
+    
+     
 
     @Override
     public void onPlayerLeave(LobbyStatus lobbyStatus) {
         System.out.println(lobbyStatus.getNumberOfClients());
+        
+        if(lobbyStatus.getPlayers().get(0) == null) player1_panel.setVisible(false); 
+        if(lobbyStatus.getPlayers().get(1) == null) player2_panel.setVisible(false);
+        
+        
+        
     }
 
     @Override
@@ -74,6 +101,7 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
         username_label3 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
         jPanel1.setLayout(null);
@@ -96,6 +124,7 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
         jPanel1.add(username_label);
         username_label.setBounds(310, 170, 190, 26);
 
+        player2_name.setForeground(new java.awt.Color(255, 255, 255));
         player2_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout player2_panelLayout = new javax.swing.GroupLayout(player2_panel);
@@ -112,6 +141,8 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
         jPanel1.add(player2_panel);
         player2_panel.setBounds(484, 238, 100, 26);
 
+        player1_name.setBackground(new java.awt.Color(255, 255, 255));
+        player1_name.setForeground(new java.awt.Color(255, 255, 255));
         player1_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
 
         javax.swing.GroupLayout player1_panelLayout = new javax.swing.GroupLayout(player1_panel);
@@ -205,7 +236,6 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JLabel player1_name;
     private javax.swing.JPanel player1_panel;
-    private javax.swing.JPanel player1_panel1;
     private javax.swing.JLabel player2_name;
     private javax.swing.JPanel player2_panel;
     private javax.swing.JButton start_button;

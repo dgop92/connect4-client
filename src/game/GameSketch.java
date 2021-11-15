@@ -23,12 +23,15 @@ public class GameSketch extends PApplet implements GameListener {
 //    int [] colorP1 = new int[3];
 //    int [] colorP2 = new int[3];
 
-    int[] colorP1 = {250, 0, 0};
-    int[] colorP2 = {0, 0, 250};
+    int[] colorP1;
+    int[] colorP2;
+    int[] colorOnTable;
     String[] names = new String[2];
     int filas, columnas;
     public CellData[][] table;
-   
+    boolean on = true;
+    boolean showName = true, showPTL = false, showInvalidP = false, showGameOver = false;
+    int showNumber, start1, start2, start3, start4;
 
     public GameSketch() {
         super();
@@ -38,7 +41,6 @@ public class GameSketch extends PApplet implements GameListener {
 
     }
 
-   
     PImage board;
 
     @Override
@@ -46,11 +48,9 @@ public class GameSketch extends PApplet implements GameListener {
         size(800, 600);
 
         // To test the places and look
-        names[0] = "Player one";
-        names[1] = "Player two";
-
+//        names[0] = "Player one";
+//        names[1] = "Player two";
         board = this.loadImage("interfaces/images/textura-tipo-madera-roble.jpg");
-
 
     }
 
@@ -61,13 +61,43 @@ public class GameSketch extends PApplet implements GameListener {
         // upper section 
         setHeader();
 
-       // delay(5000);
-        
+        // delay(5000);
         // board 
         setBoard();
 
-        setFooter();
+        if (showName && millis() - start1 <= 5000) {
 
+            if(showPTL && millis() - start2 > 2500) {
+            showMessage(0, actualPlayer);
+            
+            }
+            
+            if(!showPTL) showMessage(0, actualPlayer);
+            
+            
+
+        }
+
+        if (showPTL && millis() - start2 <= 2500) {
+
+            showMessage(1, playerTL);
+
+        }
+
+        if (showInvalidP && millis() - start3 <= 5000) {
+
+            showMessage(2, "");
+
+        }
+
+        setFooter();
+       
+         if (showGameOver) {
+
+            showMessage(3, you);
+
+        }
+        
     }
 
     @Override
@@ -76,45 +106,49 @@ public class GameSketch extends PApplet implements GameListener {
     }
 
     int tokenSelectedX = 0;
+    String you;
 
     @Override
     public void keyPressed() {
+        if (on) {
+            if (keyCode == LEFT) {
+                if (tokenSelectedX != 0) {
+                    tokenSelectedX--;
+                }
 
+            }
+            if (keyCode == RIGHT) {
+                if (tokenSelectedX != columnas - 1) {
+                    tokenSelectedX++;
+                }
 
-        if (keyCode == LEFT) {
-            if (tokenSelectedX != 0) {
-                tokenSelectedX--;
             }
 
-        }
-        if (keyCode == RIGHT) {
-            if (tokenSelectedX != columnas - 1) {
-                tokenSelectedX++;
-            }
+            if (keyCode == ENTER) {
 
-        }
-
-        if (keyCode == ENTER) {
-
-            //putTheToken[tokenSelectedY][tokenSelectedX] = true;
-            try {
-                JSONObject data = new JSONObject();
-                data.put("columnIndex", tokenSelectedX);
-                socketManager.getSocket().emit(
-                        C4Events.PLAYER_MOVEMENT,
-                        data,
-                        new Ack() {
-                    @Override
-                    public void call(Object... args) {
-                        TurnData turnData = new TurnData((JSONObject) args[0]);
+                //putTheToken[tokenSelectedY][tokenSelectedX] = true;
+                try {
+                    JSONObject data = new JSONObject();
+                    data.put("columnIndex", tokenSelectedX);
+                    socketManager.getSocket().emit(
+                            C4Events.PLAYER_MOVEMENT,
+                            data,
+                            new Ack() {
+                        @Override
+                        public void call(Object... args) {
+                            TurnData turnData = new TurnData((JSONObject) args[0]);
+                        }
+                    });
+                    if (you == null) {
+                        you = actualPlayer;
                     }
-                });
-            } catch (JSONException e) {
-                e.printStackTrace();
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
-
         }
-
     }
 
     public void run() {
@@ -122,24 +156,42 @@ public class GameSketch extends PApplet implements GameListener {
         PApplet.runSketch(processingArgs, this);
     }
 
+    String actualPlayer;
+
     @Override
     public void onPlayerTurn(InGamePlayer player) {
         System.out.println(
-            String.format(
-                "turno de %s", 
-                player.getUsername()
-            )
+                String.format(
+                        "turno de %s",
+                        player.getUsername()
+                )
         );
+
+        actualPlayer = player.getUsername();
+        
+        showName = true;
+      
+        start1 = millis();
+       
+        
     }
+
+    String playerTL;
 
     @Override
     public void onTurnLost(InGamePlayer player) {
         System.out.println(
-            String.format(
-                "el turno de %s se perdio", 
-                player.getUsername()
-            )
+                String.format(
+                        "el turno de %s se perdio",
+                        player.getUsername()
+                )
         );
+
+        playerTL = player.getUsername();
+
+        start2 = millis();
+        showPTL = true;
+
     }
 
     @Override
@@ -147,6 +199,14 @@ public class GameSketch extends PApplet implements GameListener {
         filas = gameState.getN();
         columnas = gameState.getM();
         table = gameState.getConnect4Table();
+        names[0] = gameState.getPlayers().get(0).getUsername();
+        names[1] = gameState.getPlayers().get(1).getUsername();
+        colorP1 = getColorByString(gameState.getPlayers().get(0).getColorAsString());
+        colorP2 = getColorByString(gameState.getPlayers().get(1).getColorAsString());
+
+//        System.out.println(gameState.getPlayers().get(0).getColorAsString());
+//        System.out.println(gameState.getPlayers().get(1).getColorAsString());
+
 //        for (int i = 0; i < filas; i++) {
 //            for (int j = 0; j < columnas; j++) {
 //                
@@ -156,25 +216,38 @@ public class GameSketch extends PApplet implements GameListener {
 //            
 //            System.out.println("");
 //        }
-        
     }
 
     @Override
     public void onTurnTick(TickData tickData) {
         System.out.println(tickData.getTime());
+
+        time = tickData.getTime();
     }
+
+    int totalTimeP1, totalTimeP2;
 
     @Override
     public void onPlayerWon(GameState gameState) {
 
+        totalTimeP1 = gameState.getPlayers().get(0).getCumulativeTime();
+        totalTimeP2 = gameState.getPlayers().get(1).getCumulativeTime();
+
+       
+        showGameOver = true;
     }
 
     @Override
     public void onInvalidPlay(InvalidData invalidData) {
         System.out.println(invalidData.getErrorMessage());
+        start3 = millis();
+        showInvalidP = true;
+        showName = false;
+        showPTL = false;
+
     }
 
-    public void setHeader() {
+    private void setHeader() {
         noStroke();
 
         // grid with the color and username
@@ -200,11 +273,9 @@ public class GameSketch extends PApplet implements GameListener {
 
     int tokenRadius;
 
-    public void setBoard() {
+    private void setBoard() {
         PlayBoard playBoard = new PlayBoard();
         playBoard.calculateTokenSeparation(filas, columnas);
-
-  
 
         fill(0);
 
@@ -220,26 +291,24 @@ public class GameSketch extends PApplet implements GameListener {
             for (int j = 0; j < columnas; j++) {
 
                 //marking the selected token
-                if (tokenSelectedX == j ) {
-                 
+                if (tokenSelectedX == j) {
+
                     stroke(250);
 
                 } else {
                     noStroke();
                 }
-             
-              
+
                 if (table[i][j] != null) {
 
-                    colorP1 = getColorByString(table[i][j].getColorAsString());
+                    colorOnTable = getColorByString(table[i][j].getColorAsString());
 
-                    fill(colorP1[0], colorP1[1], colorP1[2]);
+                    fill(colorOnTable[0], colorOnTable[1], colorOnTable[2]);
 
                 } else {
-                  fill(0);
+                    fill(0);
                 }
-                
-               
+
                 //draw the token
                 if (j == 0) {
                     circle(110 + tokenRadius / 2 + acumX, 110 + tokenRadius / 2 + acumY, tokenRadius);
@@ -257,18 +326,16 @@ public class GameSketch extends PApplet implements GameListener {
         }
         noStroke();
 
-
     }
 
-    // value to tests
-    String time = "1:00";
+    int time;
 
-    public void setFooter() {
+    private void setFooter() {
         fill(250);
         rect(width / 2 - 50, 600 - 30, 100, 30);
         fill(0);
         textSize(20);
-        text(time, width / 2 - textWidth(time) / 2, 600 - 10);
+        text(String.valueOf(time), width / 2 - textWidth(String.valueOf(time)) / 2, 600 - 10);
     }
 
     public int[] getColorByString(String color) {
@@ -295,6 +362,76 @@ public class GameSketch extends PApplet implements GameListener {
         }
 
         return colorF;
+
+    }
+
+    private void showMessage(int type, String name) {
+        String messageT;
+
+        switch (type) {
+
+            // Onturn
+            case 0:
+                fill(250);
+                //rect(0, 500, 800, 20);
+                textSize(20);
+                messageT = "Es el turno de " + name;
+                text(messageT, width / 2 - textWidth(messageT) / 2, 510);
+                break;
+
+            //LostTurn
+            case 1:
+                fill(250);
+                //rect(0, 500, 800, 20);
+                textSize(20);
+                messageT = name + " perdió el turno";
+                text(messageT, width / 2 - textWidth(messageT) / 2, 510);
+
+                break;
+
+            //invalidPlay
+            case 2:
+                fill(250);
+                //rect(0, 500, 800, 20);
+                textSize(20);
+                messageT = "Jugada invalida, posición ya ocupada";
+                text(messageT, width / 2 - textWidth(messageT) / 2, 510);
+
+                break;
+
+            //Victory
+            case 3:
+                fill(250);
+                on = false;
+                //rect(0, 500, 800, 20);
+                textSize(28);
+                text("Victoria", width / 2 - textWidth("Victoria") / 2, 100);
+                textSize(20);
+
+                // show the winner
+                messageT = "El ganador es: " + name;
+                text(messageT, width / 2 - textWidth(messageT) / 2, 200);
+
+                // show the stats 
+                String time1 = "Tiempo usado por " + names[0] + ": " + totalTimeP1,
+                 time2 = "Tiempo usado por " + names[1] + ": " + totalTimeP2,
+                 fastestT = "El jugador más rapido de la partida fue: ",
+                 totalT = String.valueOf(totalTimeP1 + totalTimeP2);
+                if (totalTimeP1 > totalTimeP2) {
+                    fastestT += names[0];
+
+                } else {
+                    fastestT += names[1];
+                }
+
+                text(totalT, width / 2 - textWidth(totalT) / 2, 220);
+                text(time1, width / 2 - textWidth(time1) / 2, 240);
+                text(time2, width / 2 - textWidth(time2) / 2, 260);
+                text(fastestT, width / 2 - textWidth(fastestT) / 2, 280);
+
+                break;
+
+        }
 
     }
 

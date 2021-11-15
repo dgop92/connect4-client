@@ -3,16 +3,16 @@ package interfaces;
 import core.SocketManager;
 import core.listeners.ConnectionListener;
 import core.listeners.MainMenuListener;
+import inevaup.dialogs.InfoDialog;
 
-public class MainMenu extends javax.swing.JFrame 
-    implements ConnectionListener, MainMenuListener{
-
+public class MainMenu extends javax.swing.JFrame
+        implements ConnectionListener, MainMenuListener {
 
     SocketManager socketManager;
-    
+
     public MainMenu() {
         initComponents();
-        
+
         socketManager = SocketManager.getSocketManager();
         socketManager.setConnectionListener(this);
         socketManager.setMainMenuListener(this);
@@ -36,10 +36,24 @@ public class MainMenu extends javax.swing.JFrame
     public void onDisconnection() {
         System.out.println("disc");
     }
+    
+    boolean err = true;
 
     @Override
     public void onConnectionError() {
         System.out.println("errr");
+           
+        if(err){
+          InfoDialog infoDialog = new InfoDialog(
+                this, 
+                "Error", 
+                "No se ha podido establecer conexión con el servidor",
+                InfoDialog.TypeInfoDialog.ERROR_DIALOG
+            );
+            infoDialog.setVisible(true);
+            err = false;
+        }
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -62,6 +76,7 @@ public class MainMenu extends javax.swing.JFrame
         m = new javax.swing.JSpinner();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
 
@@ -91,7 +106,7 @@ public class MainMenu extends javax.swing.JFrame
 
         username_label.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         username_label.setForeground(new java.awt.Color(255, 255, 255));
-        username_label.setText("Username:");
+        username_label.setText("Nickname:");
 
         username_texfield.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -107,7 +122,7 @@ public class MainMenu extends javax.swing.JFrame
 
         jLabel5.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         jLabel5.setForeground(new java.awt.Color(255, 255, 255));
-        jLabel5.setText("Roomname:");
+        jLabel5.setText("Sala:");
 
         jLabel6.setFont(new java.awt.Font("Comic Sans MS", 0, 12)); // NOI18N
         jLabel6.setForeground(new java.awt.Color(255, 255, 255));
@@ -160,17 +175,6 @@ public class MainMenu extends javax.swing.JFrame
                                 .addGap(80, 80, 80)
                                 .addComponent(jLabel1))))
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(275, 275, 275)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(username_label)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(username_texfield, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(jLabel5)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(roomname_textfield, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addGap(256, 256, 256)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -187,7 +191,18 @@ public class MainMenu extends javax.swing.JFrame
                                 .addGap(43, 43, 43)
                                 .addComponent(username_label1)))
                         .addGap(18, 18, 18)
-                        .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(m, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(275, 275, 275)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(jLabel5)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(roomname_textfield, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(username_label)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(username_texfield, javax.swing.GroupLayout.PREFERRED_SIZE, 147, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -201,11 +216,11 @@ public class MainMenu extends javax.swing.JFrame
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(username_label)
                     .addComponent(username_texfield, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(24, 24, 24)
+                .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel5)
                     .addComponent(roomname_textfield, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(27, 27, 27)
+                .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(username_label2)
                     .addComponent(username_label1)
@@ -250,17 +265,38 @@ public class MainMenu extends javax.swing.JFrame
     }//GEN-LAST:event_roomname_textfieldActionPerformed
 
     private void getInMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getInMouseClicked
-        socketManager.initSocket(
-            username_texfield.getText(), 
-            roomname_textfield.getText(), 
-            6, 
-            7
-        );
+
+        if ((Integer.parseInt(n.getValue().toString()) >= 6
+                && Integer.parseInt(n.getValue().toString()) <= 8)
+                && (Integer.parseInt(m.getValue().toString()) >= 6
+                && Integer.parseInt(m.getValue().toString()) <= 8)) {
+
+            socketManager.initSocket(
+                    username_texfield.getText(),
+                    roomname_textfield.getText(),
+                    Integer.parseInt(n.getValue().toString()),
+                    Integer.parseInt(m.getValue().toString())
+            );
+
+            err = true; 
+        } else {
+            
+          InfoDialog infoDialog = new InfoDialog(
+                this, 
+                "Error", 
+                "La cantidad de filas y/o columnas es muy grande o muy pequeña, debes ingresar "
+                        + "un valor entre 6 y 8",
+                InfoDialog.TypeInfoDialog.ERROR_DIALOG
+            );
+            infoDialog.setVisible(true);
+        
+        }
+
 
     }//GEN-LAST:event_getInMouseClicked
 
     private void nStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_nStateChanged
-        if(Integer.parseInt(n.getValue().toString()) < 0 ){
+        if (Integer.parseInt(n.getValue().toString()) < 0) {
 
             n.setValue(0);
         }
@@ -275,7 +311,7 @@ public class MainMenu extends javax.swing.JFrame
     }//GEN-LAST:event_nInputMethodTextChanged
 
     private void mStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_mStateChanged
-        if(Integer.parseInt(m.getValue().toString()) < 0 ){
+        if (Integer.parseInt(m.getValue().toString()) < 0) {
 
             m.setValue(0);
         }
