@@ -15,6 +15,7 @@ public class C4Events {
     public static final String UPDATE_GAME = "update-game";
     public static final String INVALID_PLAY = "invalid-play";
     public static final String PLAYER_WON = "player-won";
+    public static final String TIED_GAME = "tied-game";
     public static final String TURN_TICK = "turn-tick";
 
 }

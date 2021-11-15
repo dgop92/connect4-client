@@ -136,6 +136,12 @@ public class SocketManager {
                 gameListener.onPlayerWon(currentGameState);
             }
         });
+        socket.on(C4Events.TIED_GAME, (Object... args) -> {
+            if (gameListener != null) {
+                currentGameState = new GameState((JSONObject) args[0]);
+                gameListener.onTiedGame(currentGameState);
+            }
+        });
         socket.on(C4Events.INVALID_PLAY, (Object... args) -> {
             if (gameListener != null) {
                 gameListener.onInvalidPlay(new InvalidData((JSONObject) args[0]));

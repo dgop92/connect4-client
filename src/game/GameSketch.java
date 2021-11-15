@@ -176,6 +176,12 @@ public class GameSketch extends PApplet implements GameListener {
     }
 
     @Override
+    public void onTiedGame(GameState gameState) {
+        this.curreGameState = gameState;
+        gameMessage = "Juego empatado";
+    }
+
+    @Override
     public void onInvalidPlay(InvalidData invalidData) {
         start3 = millis();
         showInvalidP = true;

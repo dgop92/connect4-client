@@ -14,6 +14,8 @@ public interface GameListener {
     public void onUpdateState(GameState gameState);
     
     public void onPlayerWon(GameState gameState);
+
+    public void onTiedGame(GameState gameState);
     
     public void onInvalidPlay(InvalidData invalidData);
 
