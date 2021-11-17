@@ -13,18 +13,21 @@ import core.dataclasses.TickData;
 import core.dataclasses.TurnData;
 import core.listeners.GameListener;
 import core.models.PlayBoard;
+import inevaup.dialogs.InfoDialog;
+import interfaces.MainMenu;
 import io.socket.client.Ack;
+import java.util.ArrayList;
+import javax.swing.JFrame;
+import processing.awt.PSurfaceAWT.SmoothCanvas;
 import processing.core.PApplet;
 import processing.core.PImage;
+import processing.core.PSurface;
 
 public class GameSketch extends PApplet implements GameListener {
 
     SocketManager socketManager;
-
+    int tokenSelectedX = 0, tokenRadius;;
     GameState curreGameState;
-    boolean on = true;
-    boolean showName = true, showPTL = false, showInvalidP = false, showGameOver = false;
-    int showNumber, start1, start2, start3, start4;
     PImage board;
     InGamePlayer currentPlayer;
     TurnData currentTurnData;
@@ -53,32 +56,8 @@ public class GameSketch extends PApplet implements GameListener {
         if (curreGameState != null) {
             setHeader();
             setBoard();
-    
-            /* if (showName && millis() - start1 <= 5000) {
-    
-                if (showPTL && millis() - start2 > 2500) {
-                    showMessage(0, actualPlayer);
-    
-                }
-    
-                if (!showPTL)
-                    showMessage(0, actualPlayer);
-    
-            }
-    
-            if (showPTL && millis() - start2 <= 2500) {
-                showMessage(1, playerTL);
-            }
-    
-            if (showInvalidP && millis() - start3 <= 5000) {
-                showMessage(2, "");
-            } */
-    
             setFooter();
-    
-            /* if (showGameOver) {
-                showMessage(3, you);
-            } */
+
         }
 
     }
@@ -88,66 +67,58 @@ public class GameSketch extends PApplet implements GameListener {
 
     }
 
-    int tokenSelectedX = 0;
-
     @Override
     public void keyPressed() {
-        if (on) {
-            if (keyCode == LEFT) {
-                if (tokenSelectedX != 0) {
-                    tokenSelectedX--;
-                }
 
-            }
-            if (keyCode == RIGHT) {
-                if (tokenSelectedX != curreGameState.getM() - 1) {
-                    tokenSelectedX++;
-                }
+        if (keyCode == LEFT) {
+            if (tokenSelectedX != 0) {
+                tokenSelectedX--;
             }
 
-            if (keyCode == ENTER) {
-
-                // putTheToken[tokenSelectedY][tokenSelectedX] = true;
-                try {
-                    JSONObject data = new JSONObject();
-                    data.put("columnIndex", tokenSelectedX);
-                    TurnDataCallBack turnDataCallBack = new TurnDataCallBack();
-                    socketManager.getSocket().emit(
-                        C4Events.PLAYER_MOVEMENT, 
-                        data, 
-                        turnDataCallBack
-                    );
-
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
+        }
+        if (keyCode == RIGHT) {
+            if (tokenSelectedX != curreGameState.getM() - 1) {
+                tokenSelectedX++;
             }
         }
+
+        if (keyCode == ENTER) {
+
+            // putTheToken[tokenSelectedY][tokenSelectedX] = true;
+            try {
+                JSONObject data = new JSONObject();
+                data.put("columnIndex", tokenSelectedX);
+                TurnDataCallBack turnDataCallBack = new TurnDataCallBack();
+                socketManager.getSocket().emit(
+                        C4Events.PLAYER_MOVEMENT,
+                        data,
+                        turnDataCallBack
+                );
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+        }
+
     }
 
     public void run() {
-        String[] processingArgs = { this.getClass().getName() };
+        String[] processingArgs = {this.getClass().getName()};
         PApplet.runSketch(processingArgs, this);
     }
 
     @Override
     public void onPlayerTurn(InGamePlayer player) {
         currentPlayer = player;
-        showName = true;
-        start1 = millis();
+
     }
 
     String playerTL;
 
     @Override
     public void onTurnLost(InGamePlayer player) {
-        playerTL = player.getUsername();
-
-        start2 = millis();
-        showPTL = true;
-
-        gameMessage = String.format("%s perdio el turno", player.getUsername());
+        gameMessage = String.format("%s perdió el turno", player.getUsername());
 
     }
 
@@ -161,32 +132,84 @@ public class GameSketch extends PApplet implements GameListener {
         time = tickData.getTime();
     }
 
-    int totalTimeP1, totalTimeP2;
+
 
     @Override
     public void onPlayerWon(GameState gameState) {
         this.curreGameState = gameState;
-
-        totalTimeP1 = gameState.getPlayers().get(0).getCumulativeTime();
-        totalTimeP2 = gameState.getPlayers().get(1).getCumulativeTime();
-
-        showGameOver = true;
-
         gameMessage = String.format("%s ganó la partida", currentPlayer.getUsername());
+        InfoDialog infoDialog = new InfoDialog(
+                null,
+                "Partida Terminada",
+                currentPlayer.getUsername() + " ha ganado la partida <br>"
+                + "El tiempo acumulado por " + gameState.getPlayers().get(0).
+                        getUsername() + " es " + gameState.getPlayers().get(0).
+                        getCumulativeTime() + "<br>El tiempo Acumulado por "
+                + gameState.getPlayers().get(1).getUsername() + " es "
+                + gameState.getPlayers().get(1).getCumulativeTime() + "<br>" + "El jugador"
+                + " más rapido fue " + determinateFastestPlayer(gameState.getPlayers()).getUsername(),
+                InfoDialog.TypeInfoDialog.INFO_DIALOG
+        );
+        infoDialog.setVisible(true);
+
+        if (!infoDialog.isShowing()) {
+
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.setVisible(true);
+            mainMenu.setBounds(500, 0, 800, 600);
+
+            this.dispose();
+            PSurface surface = this.getSurface();
+            SmoothCanvas smoothCanvas = (SmoothCanvas) surface.getNative();
+            JFrame frame = (JFrame) smoothCanvas.getFrame();
+            frame.dispose();
+
+        }
+
     }
 
     @Override
     public void onTiedGame(GameState gameState) {
         this.curreGameState = gameState;
         gameMessage = "Juego empatado";
+        InfoDialog infoDialog = new InfoDialog(
+                null,
+                "Partida empatada",
+                "El tiempo acumulado por " + gameState.getPlayers().get(0).
+                        getUsername() + " es " + gameState.getPlayers().get(0).
+                        getCumulativeTime() + "<br>El tiempo Acumulado por "
+                + gameState.getPlayers().get(1).getUsername() + " es "
+                + gameState.getPlayers().get(1).getCumulativeTime() + "<br>" + "El jugador"
+                + " más rapido fue " + determinateFastestPlayer(gameState.getPlayers()).getUsername(),
+                InfoDialog.TypeInfoDialog.INFO_DIALOG
+        );
+        infoDialog.setVisible(true);
+
+        if (!infoDialog.isShowing()) {
+
+            MainMenu mainMenu = new MainMenu();
+            mainMenu.setVisible(true);
+            mainMenu.setBounds(500, 0, 800, 600);
+
+            this.dispose();
+            PSurface surface = this.getSurface();
+            SmoothCanvas smoothCanvas = (SmoothCanvas) surface.getNative();
+            JFrame frame = (JFrame) smoothCanvas.getFrame();
+            frame.dispose();
+
+        }
+
     }
 
     @Override
     public void onInvalidPlay(InvalidData invalidData) {
-        start3 = millis();
-        showInvalidP = true;
-        showName = false;
-        showPTL = false;
+        InfoDialog infoDialog = new InfoDialog(
+                null,
+                "Jugada invalida",
+                "La columna que seleccionó ya está llena, intente con otra columna",
+                InfoDialog.TypeInfoDialog.ERROR_DIALOG
+        );
+        infoDialog.setVisible(true);
 
     }
 
@@ -219,7 +242,7 @@ public class GameSketch extends PApplet implements GameListener {
 
     }
 
-    int tokenRadius;
+ 
 
     private void setBoard() {
 
@@ -253,7 +276,7 @@ public class GameSketch extends PApplet implements GameListener {
                 if (table[i][j] != null) {
 
                     int[] colorOnTable = getColorByString(
-                        table[i][j].getColorAsString()
+                            table[i][j].getColorAsString()
                     );
 
                     fill(colorOnTable[0], colorOnTable[1], colorOnTable[2]);
@@ -286,18 +309,18 @@ public class GameSketch extends PApplet implements GameListener {
     private void setFooter() {
 
         drawPlayersData();
-        
+
         rect(width / 2 - 50, 600 - 30, 100, 30);
         fill(0);
         textSize(20);
         text(
-            String.valueOf(time), 
-            width / 2 - textWidth(String.valueOf(time)) / 2, 
-            600 - 10
+                String.valueOf(time),
+                width / 2 - textWidth(String.valueOf(time)) / 2,
+                600 - 10
         );
     }
 
-    private void drawPlayersData(){
+    private void drawPlayersData() {
 
         int initX = 50;
         int initY = 500;
@@ -309,11 +332,11 @@ public class GameSketch extends PApplet implements GameListener {
         text(String.format("Turno de: %s", currentPlayer.getUsername()), initX, initY);
         if (currentTurnData != null) {
             text(
-                String.format(
-                    "Tiempo Gastado: %d", 
-                    currentTurnData.getTimeConsumed()
-                ), 
-                initX, initY + yGap
+                    String.format(
+                            "Tiempo Gastado: %d",
+                            currentTurnData.getTimeConsumed()
+                    ),
+                    initX, initY + yGap
             );
         }
 
@@ -321,25 +344,24 @@ public class GameSketch extends PApplet implements GameListener {
         InGamePlayer player2 = curreGameState.getPlayers().get(1);
 
         text(
-            String.format(
-                "Tiempo acumulado por %s: %d", 
-                player1.getUsername(), 
-                player1.getCumulativeTime()
-            ),
-            initX + xGap, initY
+                String.format(
+                        "Tiempo acumulado por %s: %d",
+                        player1.getUsername(),
+                        player1.getCumulativeTime()
+                ),
+                initX + xGap, initY
         );
         text(
-            String.format(
-                "Tiempo acumulado por %s: %d", 
-                player2.getUsername(), 
-                player2.getCumulativeTime()
-            ),
-            initX + xGap, initY + yGap
+                String.format(
+                        "Tiempo acumulado por %s: %d",
+                        player2.getUsername(),
+                        player2.getCumulativeTime()
+                ),
+                initX + xGap, initY + yGap
         );
 
         text("Avisos:", initX + (3 * xGap) - 60, initY);
         text(gameMessage, initX + (3 * xGap) - 60, initY + yGap);
-
 
     }
 
@@ -349,19 +371,19 @@ public class GameSketch extends PApplet implements GameListener {
 
         if (color.equalsIgnoreCase("Red")) {
 
-            int[] colorV = { 250, 0, 0 };
+            int[] colorV = {204, 0, 0};
             colorF = colorV;
         } else if (color.equalsIgnoreCase("Green")) {
-            int[] colorV = { 0, 250, 0 };
+            int[] colorV = {0, 204, 0};
             colorF = colorV;
         } else if (color.equalsIgnoreCase("Blue")) {
-            int[] colorV = { 0, 0, 250 };
+            int[] colorV = {0, 0, 204};
             colorF = colorV;
         } else if (color.equalsIgnoreCase("Orange")) {
-            int[] colorV = { 239, 127, 26 };
+            int[] colorV = {255, 102, 0};
             colorF = colorV;
         } else {
-            int[] colorV = { 0, 0, 0 };
+            int[] colorV = {0, 0, 0};
             colorF = colorV;
 
         }
@@ -370,86 +392,26 @@ public class GameSketch extends PApplet implements GameListener {
 
     }
 
-    private class TurnDataCallBack implements Ack{
+    private class TurnDataCallBack implements Ack {
 
         @Override
         public void call(Object... args) {
             currentTurnData = new TurnData((JSONObject) args[0]);
         }
-        
+
     }
 
+    private InGamePlayer determinateFastestPlayer(ArrayList<InGamePlayer> players) {
+        InGamePlayer fastestPlayer;
+        if (players.get(0).getCumulativeTime() < players.get(1).getCumulativeTime()) {
 
-    /* private void showMessage(int type, String name) {
-        String messageT;
+            fastestPlayer = players.get(0);
 
-        switch (type) {
-
-        // Onturn
-        case 0:
-            fill(250);
-            // rect(0, 500, 800, 20);
-            textSize(20);
-            messageT = "Es el turno de " + name;
-            text(messageT, width / 2 - textWidth(messageT) / 2, 510);
-            break;
-
-        // LostTurn
-        case 1:
-            fill(250);
-            // rect(0, 500, 800, 20);
-            textSize(20);
-            messageT = name + " perdió el turno";
-            text(messageT, width / 2 - textWidth(messageT) / 2, 510);
-
-            break;
-
-        // invalidPlay
-        case 2:
-            fill(250);
-            // rect(0, 500, 800, 20);
-            textSize(20);
-            messageT = "Jugada invalida, posición ya ocupada";
-            text(messageT, width / 2 - textWidth(messageT) / 2, 510);
-
-            break;
-
-        // Victory
-        case 3:
-            fill(250);
-            on = false;
-            // rect(0, 500, 800, 20);
-            textSize(28);
-            text("Victoria", width / 2 - textWidth("Victoria") / 2, 100);
-            textSize(20);
-
-            // show the winner
-            messageT = "El ganador es: " + name;
-            text(messageT, width / 2 - textWidth(messageT) / 2, 200);
-
-            // show the stats
-                // show the stats 
-            // show the stats
-            String time1 = "Tiempo usado por " + names[0] + ": " + totalTimeP1,
-                    time2 = "Tiempo usado por " + names[1] + ": " + totalTimeP2,
-                    fastestT = "El jugador más rapido de la partida fue: ",
-                    totalT = String.valueOf(totalTimeP1 + totalTimeP2);
-            if (totalTimeP1 > totalTimeP2) {
-                fastestT += names[0];
-
-            } else {
-                fastestT += names[1];
-            }
-
-            text(totalT, width / 2 - textWidth(totalT) / 2, 220);
-            text(time1, width / 2 - textWidth(time1) / 2, 240);
-            text(time2, width / 2 - textWidth(time2) / 2, 260);
-            text(fastestT, width / 2 - textWidth(fastestT) / 2, 280);
-
-            break;
+        } else {
+            fastestPlayer = players.get(1);
 
         }
-
-    } */
+        return fastestPlayer;
+    }
 
 }

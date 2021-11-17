@@ -82,8 +82,8 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
     private void initComponents() {
 
         jPanel1 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
         jLabel1 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
         username_label = new javax.swing.JLabel();
         player2_panel = new javax.swing.JPanel();
         player2_name = new javax.swing.JLabel();
@@ -91,30 +91,27 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
         player1_name = new javax.swing.JLabel();
         start_button = new javax.swing.JButton();
         username_label3 = new javax.swing.JLabel();
+        username_label1 = new javax.swing.JLabel();
+        username_label2 = new javax.swing.JLabel();
+        username_label4 = new javax.swing.JLabel();
+        username_label5 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
         jPanel1.setBackground(new java.awt.Color(0, 0, 0));
-        jPanel1.setLayout(null);
+
+        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 0, 28)); // NOI18N
+        jLabel1.setForeground(new java.awt.Color(1, 253, 255));
+        jLabel1.setText("4");
 
         jLabel3.setFont(new java.awt.Font("Comic Sans MS", 0, 28)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
         jLabel3.setText("Unite     win");
-        jPanel1.add(jLabel3);
-        jLabel3.setBounds(320, 80, 152, 40);
-
-        jLabel1.setFont(new java.awt.Font("Comic Sans MS", 0, 28)); // NOI18N
-        jLabel1.setForeground(new java.awt.Color(31, 137, 234));
-        jLabel1.setText("4");
-        jPanel1.add(jLabel1);
-        jLabel1.setBounds(400, 80, 17, 40);
 
         username_label.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         username_label.setForeground(new java.awt.Color(255, 255, 255));
-        username_label.setText("Wellcome to the lobby");
-        jPanel1.add(username_label);
-        username_label.setBounds(310, 170, 190, 26);
+        username_label.setText("Indicaciones:");
 
         player2_name.setForeground(new java.awt.Color(255, 255, 255));
         player2_name.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -129,9 +126,6 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
             player2_panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(player2_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
         );
-
-        jPanel1.add(player2_panel);
-        player2_panel.setBounds(484, 238, 100, 26);
 
         player1_name.setBackground(new java.awt.Color(255, 255, 255));
         player1_name.setForeground(new java.awt.Color(255, 255, 255));
@@ -148,33 +142,105 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
             .addComponent(player1_name, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 26, Short.MAX_VALUE)
         );
 
-        jPanel1.add(player1_panel);
-        player1_panel.setBounds(304, 238, 100, 26);
-
-        start_button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/interfaces/images/start_buttom.png"))); // NOI18N
+        start_button.setIcon(new javax.swing.ImageIcon(getClass().getResource("/interfaces/images/entrar_a_la_sala.png"))); // NOI18N
+        start_button.setBorderPainted(false);
         start_button.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 start_buttonActionPerformed(evt);
             }
         });
-        jPanel1.add(start_button);
-        start_button.setBounds(350, 360, 100, 99);
 
         username_label3.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
         username_label3.setForeground(new java.awt.Color(255, 255, 255));
-        username_label3.setText("Players:");
-        jPanel1.add(username_label3);
-        username_label3.setBounds(221, 238, 65, 26);
+        username_label3.setText("Jugadores:");
+
+        username_label1.setFont(new java.awt.Font("Comic Sans MS", 0, 18)); // NOI18N
+        username_label1.setForeground(new java.awt.Color(255, 255, 255));
+        username_label1.setText("Bienvenidos a la sala de espera");
+
+        username_label2.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        username_label2.setForeground(new java.awt.Color(255, 255, 255));
+        username_label2.setText("El creador de la sala inicia la partida.");
+
+        username_label4.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        username_label4.setForeground(new java.awt.Color(255, 255, 255));
+        username_label4.setText("Con la tecla \"Enter\" se selecciona la columna deseada.");
+
+        username_label5.setFont(new java.awt.Font("Comic Sans MS", 0, 14)); // NOI18N
+        username_label5.setForeground(new java.awt.Color(255, 255, 255));
+        username_label5.setText("Con las flechas \"Izquierda\" y \"Derecha\" te mueves entre columnas. ");
+
+        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
+        jPanel1.setLayout(jPanel1Layout);
+        jPanel1Layout.setHorizontalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(320, 320, 320)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addGap(80, 80, 80)
+                                .addComponent(jLabel1))
+                            .addComponent(jLabel3)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(221, 221, 221)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(username_label5)
+                            .addComponent(username_label2, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(username_label4)
+                            .addComponent(username_label, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(221, 221, 221)
+                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(username_label1, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(jPanel1Layout.createSequentialGroup()
+                                .addComponent(username_label3)
+                                .addGap(18, 18, 18)
+                                .addComponent(player1_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGap(80, 80, 80)
+                                .addComponent(player2_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addGap(135, 135, 135))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
+                .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(341, 341, 341))
+        );
+        jPanel1Layout.setVerticalGroup(
+            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel1Layout.createSequentialGroup()
+                .addGap(80, 80, 80)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel1)
+                    .addComponent(jLabel3))
+                .addGap(55, 55, 55)
+                .addComponent(username_label1)
+                .addGap(37, 37, 37)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(username_label3)
+                    .addComponent(player1_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(player2_panel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(44, 44, 44)
+                .addComponent(username_label)
+                .addGap(18, 18, 18)
+                .addComponent(username_label2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(username_label5)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(username_label4)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 69, Short.MAX_VALUE)
+                .addComponent(start_button, javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32))
+        );
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
 
         pack();
@@ -232,7 +298,11 @@ public class Lobby extends javax.swing.JFrame implements LobbyListener {
     private javax.swing.JPanel player2_panel;
     private javax.swing.JButton start_button;
     private javax.swing.JLabel username_label;
+    private javax.swing.JLabel username_label1;
+    private javax.swing.JLabel username_label2;
     private javax.swing.JLabel username_label3;
+    private javax.swing.JLabel username_label4;
+    private javax.swing.JLabel username_label5;
     // End of variables declaration//GEN-END:variables
 
 }

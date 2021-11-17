@@ -15,6 +15,8 @@ public class TestGame {
             GameState gst = new GameState(jsonObject);
             g.onUpdateState(gst);
             g.onPlayerTurn(gst.getPlayers().get(0));
+           // g.onPlayerWon(gst); 
+            g.onTiedGame(gst);
         } catch (JSONException e) {
             e.printStackTrace();
         }
