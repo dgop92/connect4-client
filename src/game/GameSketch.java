@@ -315,11 +315,8 @@ public class GameSketch extends PApplet implements GameListener {
         rect(width / 2 - 50, 600 - 30, 100, 30);
         fill(0);
         textSize(20);
-        text(
-                String.valueOf(time),
-                width / 2 - textWidth(String.valueOf(time)) / 2,
-                600 - 10
-        );
+        String timeText = String.format("%d / 30", time);
+        text(timeText, width / 2 - textWidth(timeText) / 2, 600 - 10);
     }
 
     private void drawPlayersData() {
