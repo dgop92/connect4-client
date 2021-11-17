@@ -158,6 +158,8 @@ public class GameSketch extends PApplet implements GameListener {
             mainMenu.setVisible(true);
             mainMenu.setBounds(500, 0, 800, 600);
 
+            this.socketManager.disconnectAndReset();
+
             this.dispose();
             PSurface surface = this.getSurface();
             SmoothCanvas smoothCanvas = (SmoothCanvas) surface.getNative();

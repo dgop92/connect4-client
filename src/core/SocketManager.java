@@ -20,7 +20,7 @@ public class SocketManager {
 
     private static SocketManager socketManager = null;
     private Socket socket;
-    public static final String serverUrl = "ws://localhost:8080";
+    public static final String serverUrl = "https://boiling-gorge-60187.herokuapp.com";
     private ConnectionListener connectionListener;
     private LobbyListener lobbyListener;
     private MainMenuListener mainMenuListener;
@@ -64,6 +64,27 @@ public class SocketManager {
         }
     }
 
+    public void disconnectAndReset() {
+
+        turnOffConectionListeners();
+        turnOffMainMenuListeners();
+        turnOffLobbyListeners();
+        turnOffGameListeners();
+
+        this.connectionListener = null;
+        this.lobbyListener = null;
+        this.mainMenuListener = null;
+        this.gameListener = null;
+        this.currentLobbyStatus = null;
+        this.currentGameState = null;
+
+        if (socket != null){
+            socket.disconnect();
+            socket = null;
+        }
+
+    }
+
     private void initConnectionListeners() {
         socket.on(Socket.EVENT_CONNECT, (Object... args) -> {
             if (connectionListener != null)
@@ -79,11 +100,21 @@ public class SocketManager {
         });
     }
 
+    private void turnOffConectionListeners(){
+        socket.off(Socket.EVENT_CONNECT);
+        socket.off(Socket.EVENT_DISCONNECT);
+        socket.off(Socket.EVENT_CONNECT_ERROR);
+    }
+
     private void initMainMenuListeners() {
         socket.on(C4Events.MOVE_TO_LOBBY, (Object... args) -> {
             if (mainMenuListener != null)
                 mainMenuListener.moveToLobby();
         });
+    }
+
+    public void turnOffMainMenuListeners(){
+        socket.off(C4Events.MOVE_TO_LOBBY);
     }
 
     private void initLobbyListeners() {
@@ -103,6 +134,12 @@ public class SocketManager {
             if (lobbyListener != null)
                 lobbyListener.onGameStarted();
         });
+    }
+
+    public void turnOffLobbyListeners(){
+        socket.off(C4Events.JOIN_LOBBY);
+        socket.off(C4Events.LEAVE_LOBBY);
+        socket.off(C4Events.GAME_STARTED);
     }
 
     private void initGameListeners() {
@@ -152,6 +189,16 @@ public class SocketManager {
                 gameListener.onTurnTick(new TickData((JSONObject) args[0]));
             }
         });
+    }
+
+    public void turnOffGameListeners(){
+        socket.off(C4Events.PLAYER_TURN);
+        socket.off(C4Events.TURN_LOST);
+        socket.off(C4Events.UPDATE_GAME);
+        socket.off(C4Events.PLAYER_WON);
+        socket.off(C4Events.TIED_GAME);
+        socket.off(C4Events.INVALID_PLAY);
+        socket.off(C4Events.TURN_TICK);
     }
 
     public void setMainMenuListener(MainMenuListener mainMenuListener) {

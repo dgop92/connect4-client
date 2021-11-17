@@ -272,6 +272,17 @@ public class MainMenu extends javax.swing.JFrame
 
     private void getInMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_getInMouseClicked
 
+        if (roomname_textfield.getText().isEmpty()){
+            InfoDialog infoDialog2 = new InfoDialog(
+                this,
+                "Error",
+                "El nombre de la sala debe estar entre 2 y 8 caracteres",
+                InfoDialog.TypeInfoDialog.ERROR_DIALOG
+            );
+            infoDialog2.setVisible(true);
+            return;
+        }
+
         boolean st1 = ((Integer.parseInt(n.getValue().toString()) >= 6
             && Integer.parseInt(n.getValue().toString()) <= 8)
         && (Integer.parseInt(m.getValue().toString()) >= 6
